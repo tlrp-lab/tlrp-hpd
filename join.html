@@ -1,0 +1,77 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join Server - Houston Police Department - [Your Server Name] FiveM RP</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="disclaimer">
+        Official Website for Texas Life Roleplay's HPD
+    </div>
+    <header>
+        <h1>Houston Police Department</h1>
+        <img src="https://cdn.discordapp.com/attachments/1238319458527739936/1419063304109953138/raw.png?ex=68d06530&is=68cf13b0&hm=552034abf1fc36382fd44609ab439fe515c6ab99684bbb1642dcf80a3e04734b&" alt="HPD Badge" style="max-width: 200px;">
+        <p>Serving and Protecting the Streets of Houston in Roleplay</p>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="index.html">Home</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="join.html">Join Server</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </nav>
+    <main>
+        <section id="join">
+            <h2>Join the Server</h2>
+            <p>Ready to badge up? Connect to our FiveM server and start your career by applying to HPD.</p>
+            <p><strong>Discord:</strong> <a href="[https://discord.gg/jtWDyTxusY]">Click to Join the Discord!</a></p>
+            <a href="https://cfx.re/join/kbdj8v" class="cta-button">Connect Now</a>
+        </section>
+    </main>
+    <footer>
+        <p>2025 TLRP FiveM RP - HPD. For entertainment purposes only.</p>
+    </footer>
+</body>
+</html>
